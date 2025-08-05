@@ -290,6 +290,119 @@ html,body{
 
 .zaf span i{font-style: normal; font-size: .18rem;}
 
+.tech-points {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px !important;
+    padding: 0 .15rem .15rem .15rem !important;
+    margin-top: 10px;
+}
+.tech-point {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 20px 10px !important; /* 适当保留左右内边距 */
+    min-height: 120px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.tech-point::before {
+    display: none !important;
+}
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0px !important; /* 减少间距 */
+    height: 100%;
+    padding: 0px !important;
+}
+.module-item {
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 20px 10px !important;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.module-item:hover {
+    background: rgba(73, 188, 247, 0.1) !important;
+    transform: none !important;
+}
+
+/* 撤销全局高度强制 */
+/* .mainbox>ul>li 和 .boxall 的 height 相关改动全部移除 */
+
+/* 只针对内容区做高度填充 */
+.tech-points {
+    height: 100% !important;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px !important;
+    padding: 0 .15rem .15rem .15rem !important;
+}
+.module-grid {
+    height: 100% !important;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0px !important;
+    padding: 0 .15rem .15rem .15rem !important;
+}
+
+.mainbox>ul>li:first-child {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.mainbox>ul>li:first-child .boxall {
+    flex-shrink: 0;
+}
+.mainbox>ul>li:first-child .boxall:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* 左下角技术攻关重点专属样式 */
+.tech-key-bottom {
+    position: absolute;
+    left: 0;
+    bottom: 20px;
+    width: 32%;
+    height: calc(40% - .15rem);
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(73,188,247,0.08);
+    background: rgba(6,48,109,.5);
+    z-index: 20;
+    padding: 0 .15rem .15rem .15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+@media (max-width: 1200px) {
+    .tech-key-bottom { width: 100%; left: 0; }
+}
+
+.tech-key-bottom .tech-points {
+    margin-top: -20px;
+}
+
+.data-standard-section {
+    background: rgba(6,48,109,.5) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 12px rgba(73,188,247,0.08) !important;
+    padding: 0 .15rem .15rem .15rem !important;
+    margin-bottom: 20px !important;
+    height: 370px !important;
+    min-height: unset !important;
+}
+
 
 
 
