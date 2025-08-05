@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字体渲染测试</title>
+    <style>
+        /* 全局字体渲染优化 */
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-smooth: always;
+        }
+        
+        body {
+            background: #000d4a;
+            color: #fff;
+            font-family: "微软雅黑", "Microsoft YaHei", Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(6,48,109,.5);
+            border-radius: 8px;
+        }
+        
+        .title {
+            font-size: 35px;
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        .number {
+            color: #fef000;
+            font-size: 30px;
+            font-weight: 600;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        .label {
+            color: #fff;
+            font-size: 22px;
+            font-weight: 600;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        .description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.4;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        .comparison {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        
+        .before, .after {
+            flex: 1;
+            padding: 15px;
+            margin: 0 10px;
+            border-radius: 5px;
+        }
+        
+        .before {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+        
+        .after {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+        
+        .before h3 {
+            color: #ff6b6b;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .after h3 {
+            color: #51cf66;
+            font-weight: 600;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-section">
+        <h1 class="title">字体渲染优化测试</h1>
+        
+        <div class="comparison">
+            <div class="before">
+                <h3>优化前</h3>
+                <p>字体可能出现的突出边框问题</p>
+                <div class="number">18,726</div>
+                <div class="label">平台总览</div>
+            </div>
+            
+            <div class="after">
+                <h3>优化后</h3>
+                <p>字体渲染更加平滑清晰</p>
+                <div class="number">18,726</div>
+                <div class="label">平台总览</div>
+            </div>
+        </div>
+        
+        <div class="description">
+            <p>优化内容包括：</p>
+            <ul>
+                <li>添加字体平滑渲染属性</li>
+                <li>调整字体权重从bold到600</li>
+                <li>移除文字阴影和描边效果</li>
+                <li>优化字体族设置</li>
+                <li>添加文本渲染优化</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="title">材料大数据平台</h2>
+        <div class="number">2,847项</div>
+        <div class="label">材料标准</div>
+        <div class="description">
+            通过字体渲染优化，解决了深色背景下字体边缘模糊和突出边框的问题，
+            使文字显示更加清晰、平滑，提升了整体的视觉效果和用户体验。
+        </div>
+    </div>
+</body>
+</html> 

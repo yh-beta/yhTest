@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>优化效果测试</title>
+    <style>
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-smooth: always;
+        }
+        
+        body {
+            background: #000d4a;
+            color: #fff;
+            font-family: "微软雅黑", "Microsoft YaHei", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(6,48,109,.5);
+            border-radius: 8px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: #49bcf7;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* 技术要点测试 */
+        .tech-points {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            height: 200px;
+            padding: 8px;
+        }
+        
+        .tech-point {
+            background: linear-gradient(135deg, rgba(255, 239, 0, 0.1), rgba(255, 239, 0, 0.05));
+            border: 1px solid rgba(255, 239, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .tech-point h4 {
+            color: #fef000;
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        .tech-point p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.4;
+            font-weight: 500;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tech-point::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 12px;
+            height: 12px;
+            background: #fef000;
+            border-radius: 50%;
+        }
+        
+        /* 业务模块测试 */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            height: 150px;
+            padding: 10px;
+        }
+        
+        .module-item {
+            background: linear-gradient(135deg, rgba(73, 188, 247, 0.2), rgba(20, 182, 255, 0.1));
+            border: 1px solid rgba(73, 188, 247, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100px;
+        }
+        
+        .module-item:hover {
+            background: linear-gradient(135deg, rgba(73, 188, 247, 0.4), rgba(20, 182, 255, 0.2));
+            transform: translateY(-2px);
+        }
+        
+        .module-item img {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 12px;
+        }
+        
+        .module-item h4 {
+            color: #49bcf7;
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 表格轮播测试 */
+        .table-carousel {
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(73, 188, 247, 0.3);
+            border-radius: 8px;
+        }
+        
+        .table-carousel-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 40px;
+        }
+        
+        .table-carousel-item.active {
+            opacity: 1;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        .data-table th {
+            background: rgba(73, 188, 247, 0.2);
+            color: #49bcf7;
+            font-weight: 600;
+            font-size: 16px;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        .data-table tr:hover {
+            background: rgba(73, 188, 247, 0.1);
+        }
+        
+        .carousel-controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .carousel-btn {
+            background: rgba(73, 188, 247, 0.3);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .carousel-btn:hover {
+            background: rgba(73, 188, 247, 0.5);
+        }
+        
+        .carousel-btn.active {
+            background: #49bcf7;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-section">
+        <h2 class="section-title">技术攻关重点 - 优化效果</h2>
+        <div class="tech-points">
+            <div class="tech-point">
+                <h4>新材料研发</h4>
+                <p>突破高性能复合材料、智能材料等前沿技术，提升材料性能指标</p>
+            </div>
+            <div class="tech-point">
+                <h4>智能制造</h4>
+                <p>推进材料生产数字化、智能化转型，提高生产效率和产品质量</p>
+            </div>
+            <div class="tech-point">
+                <h4>绿色制造</h4>
+                <p>发展环保材料技术，降低能耗和污染，实现可持续发展</p>
+            </div>
+            <div class="tech-point">
+                <h4>标准体系</h4>
+                <p>完善材料标准体系，提升行业规范化水平，促进产业升级</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="section-title">业务模块 - 优化效果</h2>
+        <div class="module-grid">
+            <div class="module-item">
+                <div style="width: 40px; height: 40px; background: #49bcf7; border-radius: 50%; margin: 0 auto 12px;"></div>
+                <h4>研发管理</h4>
+            </div>
+            <div class="module-item">
+                <div style="width: 40px; height: 40px; background: #49bcf7; border-radius: 50%; margin: 0 auto 12px;"></div>
+                <h4>生产监控</h4>
+            </div>
+            <div class="module-item">
+                <div style="width: 40px; height: 40px; background: #49bcf7; border-radius: 50%; margin: 0 auto 12px;"></div>
+                <h4>质量检测</h4>
+            </div>
+            <div class="module-item">
+                <div style="width: 40px; height: 40px; background: #49bcf7; border-radius: 50%; margin: 0 auto 12px;"></div>
+                <h4>市场分析</h4>
+            </div>
+            <div class="module-item">
+                <div style="width: 40px; height: 40px; background: #49bcf7; border-radius: 50%; margin: 0 auto 12px;"></div>
+                <h4>供应链管理</h4>
+            </div>
+            <div class="module-item">
+                <div style="width: 40px; height: 40px; background: #49bcf7; border-radius: 50%; margin: 0 auto 12px;"></div>
+                <h4>财务管理</h4>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="section-title">表格轮播 - 优化效果</h2>
+        <div class="table-carousel">
+            <div class="table-carousel-item active" id="standardTable">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>标准编号</th>
+                            <th>标准名称</th>
+                            <th>发布状态</th>
+                            <th>更新时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>GB/T 12345</td><td>金属材料拉伸试验方法</td><td>已发布</td><td>2024-01-15</td></tr>
+                        <tr><td>GB/T 23456</td><td>高分子材料性能测试</td><td>已发布</td><td>2024-02-20</td></tr>
+                        <tr><td>GB/T 34567</td><td>复合材料强度评估</td><td>制定中</td><td>2024-03-10</td></tr>
+                        <tr><td>GB/T 45678</td><td>陶瓷材料硬度测试</td><td>已发布</td><td>2024-01-08</td></tr>
+                        <tr><td>GB/T 56789</td><td>纳米材料表征方法</td><td>制定中</td><td>2024-04-05</td></tr>
+                        <tr><td>GB/T 67890</td><td>生物材料安全性评价</td><td>已发布</td><td>2024-05-12</td></tr>
+                        <tr><td>GB/T 78901</td><td>功能材料测试规范</td><td>制定中</td><td>2024-06-08</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-carousel-item" id="resourceTable">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>资源名称</th>
+                            <th>数据类型</th>
+                            <th>数据量</th>
+                            <th>更新频率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>材料性能数据库</td><td>结构化</td><td>2.3TB</td><td>每日</td></tr>
+                        <tr><td>企业生产数据</td><td>半结构化</td><td>1.8TB</td><td>实时</td></tr>
+                        <tr><td>科研文献库</td><td>非结构化</td><td>5.6TB</td><td>每周</td></tr>
+                        <tr><td>市场分析报告</td><td>结构化</td><td>890GB</td><td>每月</td></tr>
+                        <tr><td>专利信息库</td><td>半结构化</td><td>3.2TB</td><td>每日</td></tr>
+                        <tr><td>质量标准库</td><td>结构化</td><td>1.5TB</td><td>每周</td></tr>
+                        <tr><td>检测报告库</td><td>半结构化</td><td>2.1TB</td><td>每日</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="carousel-controls">
+            <button class="carousel-btn active" onclick="switchTable('standard')">数据标准</button>
+            <button class="carousel-btn" onclick="switchTable('resource')">数据资源</button>
+        </div>
+    </div>
+    
+    <script>
+        function switchTable(type) {
+            $('.carousel-btn').removeClass('active');
+            $('.table-carousel-item').removeClass('active');
+            
+            if (type === 'standard') {
+                $('.carousel-btn:first').addClass('active');
+                $('#standardTable').addClass('active');
+            } else {
+                $('.carousel-btn:last').addClass('active');
+                $('#resourceTable').addClass('active');
+            }
+        }
+        
+        // 自动轮播
+        function startTableCarousel() {
+            let currentIndex = 0;
+            const tables = ['standard', 'resource'];
+            
+            setInterval(function() {
+                currentIndex = (currentIndex + 1) % tables.length;
+                switchTable(tables[currentIndex]);
+            }, 5000); // 每5秒切换一次
+        }
+        
+        // 启动轮播
+        setTimeout(function() {
+            startTableCarousel();
+        }, 2000);
+    </script>
+</body>
+</html> 

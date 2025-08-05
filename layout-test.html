@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>布局优化测试 - 100%缩放</title>
+    <style>
+        /* 全局字体渲染优化 */
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-smooth: always;
+        }
+        
+        /* 响应式布局优化 - 适应100%缩放 */
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background: #000d4a;
+            color: #fff;
+            font-family: "微软雅黑", "Microsoft YaHei", Arial, sans-serif;
+        }
+        
+        .test-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            height: 0.8rem;
+            background: linear-gradient(90deg, #49bcf7, #14b6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            color: #fff;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .time {
+            position: absolute;
+            right: 0.15rem;
+            top: 0;
+            line-height: 0.5rem;
+            color: rgba(255,255,255,.7);
+            font-size: 0.2rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            padding: 0.1rem;
+            gap: 0.1rem;
+        }
+        
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.08rem;
+        }
+        
+        .column:nth-child(2) {
+            flex: 1.2;
+        }
+        
+        .module {
+            background: rgba(6,48,109,.5);
+            border-radius: 8px;
+            padding: 0.15rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .module-title {
+            font-size: 24px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 0.1rem;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .module-title:before {
+            content: '';
+            position: absolute;
+            height: 0.15rem;
+            width: 6px;
+            background: #49bcf7;
+            border-radius: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            margin-top: 0.05rem;
+        }
+        
+        .module-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #49bcf7;
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 0.1rem;
+            margin-bottom: 0.08rem;
+        }
+        
+        .stat-item {
+            flex: 1;
+            background: rgba(73, 188, 247, 0.2);
+            border-radius: 8px;
+            padding: 0.1rem;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            color: #fef000;
+            font-weight: 600;
+            margin-bottom: 0.05rem;
+        }
+        
+        .stat-label {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.1rem;
+            height: 100%;
+        }
+        
+        .grid-3x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.1rem;
+            height: 100%;
+        }
+        
+        .grid-item {
+            background: rgba(73, 188, 247, 0.1);
+            border: 1px solid rgba(73, 188, 247, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #49bcf7;
+        }
+        
+        .info-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .zoom-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="zoom-info">
+        当前缩放比例: <span id="zoom-level">100%</span><br>
+        窗口尺寸: <span id="window-size"></span>
+    </div>
+    
+    <div class="test-container">
+        <div class="header">
+            <h1>材料大数据平台</h1>
+            <div class="time" id="current-time">2024年12月05日16时16分54秒</div>
+        </div>
+        
+        <div class="main-content">
+            <!-- 左列 -->
+            <div class="column">
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-number">2,847</div>
+                        <div class="stat-label">材料标准</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">15,632</div>
+                        <div class="stat-label">数据资源</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1,247</div>
+                        <div class="stat-label">企业数量</div>
+                    </div>
+                </div>
+                
+                <div class="module">
+                    <div class="module-title">数据标准与资源</div>
+                    <div class="module-content">
+                        <div class="info-text">
+                            数据表格区域<br>
+                            优化后适应100%缩放
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module">
+                    <div class="module-title">技术攻关重点</div>
+                    <div class="module-content">
+                        <div class="grid-2x2">
+                            <div class="grid-item">新材料研发</div>
+                            <div class="grid-item">智能制造</div>
+                            <div class="grid-item">绿色制造</div>
+                            <div class="grid-item">标准体系</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 中列 -->
+            <div class="column">
+                <div class="module">
+                    <div class="module-title">平台总览</div>
+                    <div class="module-content">
+                        <div class="info-text">
+                            主要数据展示区域<br>
+                            18,726 总数据量
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module">
+                    <div class="module-title">2024年材料专业人才分布</div>
+                    <div class="module-content">
+                        <div class="info-text">
+                            图表展示区域<br>
+                            人才分布统计
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module">
+                    <div class="module-title">业务模块</div>
+                    <div class="module-content">
+                        <div class="grid-3x2">
+                            <div class="grid-item">研发管理</div>
+                            <div class="grid-item">生产监控</div>
+                            <div class="grid-item">质量检测</div>
+                            <div class="grid-item">市场分析</div>
+                            <div class="grid-item">供应链管理</div>
+                            <div class="grid-item">财务管理</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右列 -->
+            <div class="column">
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-number">1,847</div>
+                        <div class="stat-label">专利申请</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">科研机构</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">892</div>
+                        <div class="stat-label">技术成果</div>
+                    </div>
+                </div>
+                
+                <div class="module">
+                    <div class="module-title">材料产业发展趋势</div>
+                    <div class="module-content">
+                        <div class="info-text">
+                            趋势图表区域<br>
+                            产业发展分析
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module">
+                    <div class="module-title">企业排行榜</div>
+                    <div class="module-content">
+                        <div class="info-text">
+                            排行榜展示区域<br>
+                            企业排名统计
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.getFullYear() + '年' + 
+                String(now.getMonth() + 1).padStart(2, '0') + '月' + 
+                String(now.getDate()).padStart(2, '0') + '日' + 
+                String(now.getHours()).padStart(2, '0') + '时' + 
+                String(now.getMinutes()).padStart(2, '0') + '分' + 
+                String(now.getSeconds()).padStart(2, '0') + '秒';
+            document.getElementById('current-time').textContent = timeString;
+        }
+        
+        // 更新缩放信息
+        function updateZoomInfo() {
+            const zoomLevel = Math.round(window.devicePixelRatio * 100);
+            document.getElementById('zoom-level').textContent = zoomLevel + '%';
+            document.getElementById('window-size').textContent = 
+                window.innerWidth + ' x ' + window.innerHeight;
+        }
+        
+        // 初始化
+        updateTime();
+        updateZoomInfo();
+        
+        // 定时更新
+        setInterval(updateTime, 1000);
+        window.addEventListener('resize', updateZoomInfo);
+    </script>
+</body>
+</html> 
