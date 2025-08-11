@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>材料大数据平台</title>
+    <meta http-equiv="refresh" content="50;url='new-index.html'">
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <link rel="stylesheet" href="css/comon0.css">
+    <style>
+        /* 全局字体渲染优化 */
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-smooth: always;
+        }
+        
+        /* 响应式布局优化 - 适应100%缩放 */
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* 优化头部高度 */
+        .head {
+            height: 0.8rem !important;
+        }
+        
+        .head h1 {
+            font-size: 32px !important;
+            line-height: 0.8rem !important;
+        }
+        
+        .time {
+            line-height: 0.5rem !important;
+            font-size: 0.2rem !important;
+        }
+        
+        /* 优化主容器 */
+        .mainbox {
+            height: calc(100vh - 0.8rem) !important;
+            padding: 0 0.1rem 0 0.1rem !important;
+        }
+        
+        /* 优化模块间距 */
+        .boxall {
+            margin-bottom: 0.08rem !important;
+            padding: 0 0.15rem 0.15rem 0.15rem !important;
+        }
+        
+        /* 优化标题 */
+        .alltitle {
+            font-size: 24px !important;
+            line-height: 0.6rem !important;
+            margin-bottom: 0.1rem !important;
+            padding-top: 0.1rem !important;
+        }
+        
+        .alltitle:before {
+            height: 0.15rem !important;
+            margin-top: 0.05rem !important;
+        }
+        
+        /* 优化内容区域 */
+        .boxnav {
+            height: calc(100% - 0.7rem) !important;
+        }
+        
+        /* 优化统计数字 */
+        .bar1 h3 {
+            font-size: 24px !important;
+        }
+        
+        .bar1 span {
+            font-size: 18px !important;
+        }
+        
+        /* 优化饼图标题 */
+        .tit01 {
+            font-size: 22px !important;
+            padding: 0.15rem 0 0.1rem 0 !important;
+            margin-bottom: 0.1rem !important;
+        }
+        
+        /* 优化平台总览 */
+        .sqzs h1 {
+            font-size: 24px !important;
+        }
+        
+        .sqzs p {
+            font-size: 18px !important;
+            padding: 0.1rem 0 !important;
+        }
+        
+        /* 优化排行榜 */
+        .paim li>span {
+            width: 0.3rem !important;
+            height: 0.3rem !important;
+            line-height: 0.3rem !important;
+            font-size: 22px !important;
+        }
+        
+        .pmbar i {
+            font-size: 22px !important;
+        }
+        
+        .pmnav p {
+            font-size: 14px !important;
+        }
+        
+        /* 优化表格 */
+        .table-tab {
+            padding: 8px 16px !important;
+            font-size: 16px !important;
+            margin-bottom: 10px !important;
+        }
+        
+        .data-table {
+            font-size: 14px !important;
+        }
+        
+        .data-table th {
+            font-size: 16px !important;
+            padding: 8px !important;
+        }
+        
+        .data-table td {
+            padding: 6px 8px !important;
+        }
+        
+        /* 优化模块网格 */
+        .module-grid {
+            gap: 10px !important;
+            padding: 8px !important;
+        }
+        
+        .module-item {
+            padding: 15px !important;
+        }
+        
+        .module-item h4 {
+            font-size: 24px !important;
+        }
+        
+        .module-item img {
+            width: 40px !important;
+            height: 40px !important;
+        }
+        
+        /* 优化技术要点 */
+        .tech-points {
+            gap: 15px !important;
+            padding: 8px !important;
+        }
+        
+        .tech-point {
+            padding: 15px !important;
+        }
+        
+        .tech-point h4 {
+            font-size: 20px !important;
+            margin-bottom: 15px !important;
+        }
+        
+        .tech-point p {
+            font-size: 14px !important;
+        }
+        
+        /* 优化行间距 */
+        .row1 li {
+            padding: 0.1rem 0.05rem 0 0.05rem !important;
+        }
+        
+        /* 优化图标大小 */
+        .bar1 img {
+            width: 0.3rem !important;
+        }
+        
+        /* 优化进度条 */
+        .pmbar span {
+            height: 0.1rem !important;
+        }
+        
+        /* 确保内容不溢出 */
+        .table-content {
+            height: calc(100% - 60px) !important;
+        }
+        
+        /* 优化字体渲染 */
+        .alltitle {
+            font-size: 24px;
+            color: #fff;
+            line-height: 0.6rem;
+            position: relative;
+            padding-left: 0.1rem;
+            padding-right: 0.1rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 0.1rem;
+            padding-top: 0.1rem;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化头部标题 */
+        .head h1 {
+            color: #fff;
+            text-align: center;
+            font-size: 32px;
+            line-height: 0.8rem;
+            letter-spacing: -1px;
+            padding: 0 0.15rem;
+            font-weight: 600;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化数字显示 */
+        .sqzs h1 {
+            height: calc(100% - 0.5rem);
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            border-top: 1px solid rgba(255,255,255,.1);
+            display: flex;
+            align-items: center;
+            color: #fef000;
+            font-family: "微软雅黑", Arial, sans-serif;
+            font-weight: 600;
+            letter-spacing: 2px;
+            font-size: 24px;
+            justify-content: center;
+            padding-bottom: 0.05rem;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化标签页字体 */
+        .table-tab {
+            padding: 8px 16px;
+            background: rgba(73, 188, 247, 0.3);
+            color: #fff;
+            cursor: pointer;
+            margin-right: 8px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-size: 16px;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-weight: 600;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化模块标题 */
+        .module-item h4 {
+            color: #49bcf7;
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化技术要点标题 */
+        .tech-point h4 {
+            color: #fef000;
+            margin: 0 0 15px 0;
+            font-size: 20px;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化表格标题 */
+        .data-table th {
+            background: rgba(73, 188, 247, 0.2);
+            color: #49bcf7;
+            font-weight: 600;
+            font-size: 16px;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化排行榜数字 */
+        .paim li>span {
+            width: 0.3rem;
+            height: 0.3rem;
+            text-align: center;
+            line-height: 0.3rem;
+            background: #878787;
+            border-radius: 0.05rem;
+            margin-right: 0.1rem;
+            font-size: 22px;
+            font-weight: 600;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化分数显示 */
+        .pmbar i {
+            line-height: 0.2rem;
+            font-style: normal;
+            padding-left: 0.1rem;
+            color: #49bcf7;
+            font-size: 22px;
+            font-weight: 600;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化统计数字 */
+        .bar1 h3 {
+            color: #fef000;
+            font-size: 24px;
+            line-height: 1.2;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-weight: 600;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化标签文字 */
+        .bar1 span {
+            color: #fff;
+            font-size: 18px;
+            display: block;
+            font-weight: 600;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            text-align: center;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化饼图标题 */
+        .tit01 {
+            text-align: center;
+            color: white;
+            font-size: 22px;
+            padding: 0.15rem 0 0.1rem 0;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-weight: 600;
+            margin-bottom: 0.1rem;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化平台总览文字 */
+        .sqzs p {
+            padding: 0.1rem 0;
+            font-size: 18px;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化企业名称 */
+        .pmnav p {
+            color: #fff;
+            opacity: .6;
+            font-size: 14px;
+            padding-bottom: 0.05rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化技术要点描述 */
+        .tech-point p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.4;
+            font-weight: 500;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        /* 优化表格内容 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+            font-size: 14px;
+        }
+        .data-table th,
+        .data-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+            text-shadow: none;
+            -webkit-text-stroke: 0;
+        }
+        
+        .table-container {
+            height: 100%;
+            overflow: hidden;
+        }
+        .table-tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .table-tab.active {
+            background: #49bcf7;
+            font-size: 16px;
+        }
+        .table-content {
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+        .data-table tr:hover {
+            background: rgba(73, 188, 247, 0.1);
+        }
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            height: 100%;
+            padding: 8px;
+        }
+        .module-item {
+            background: linear-gradient(135deg, rgba(73, 188, 247, 0.2), rgba(20, 182, 255, 0.1));
+            border: 1px solid rgba(73, 188, 247, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .module-item:hover {
+            background: linear-gradient(135deg, rgba(73, 188, 247, 0.4), rgba(20, 182, 255, 0.2));
+            transform: translateY(-2px);
+        }
+        .module-item img {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 12px;
+        }
+        .tech-points {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            height: 100%;
+            padding: 8px;
+        }
+        .tech-point {
+            background: linear-gradient(135deg, rgba(255, 239, 0, 0.1), rgba(255, 239, 0, 0.05));
+            border: 1px solid rgba(255, 239, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+        }
+        .tech-point::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 12px;
+            height: 12px;
+            background: #fef000;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading">
+        <div class="loadbox"> <img src="images/loading.gif"> 页面加载中... </div>
+    </div>
+    <div class="head">
+        <h1>材料大数据平台</h1>
+        <div class="time" id="showTime">2024年12月05日16时16分54秒</div>
+        <script>
+            var t = null;
+            t = setTimeout(time, 1000);//開始运行
+            function time() {
+                clearTimeout(t);//清除定时器
+                dt = new Date();
+                var y = dt.getFullYear();
+                var mt = dt.getMonth() + 1;
+                var day = dt.getDate();
+                var h = dt.getHours();//获取时
+                var m = dt.getMinutes();//获取分
+                var s = dt.getSeconds();//获取秒
+                var t = null;
+                document.getElementById("showTime").innerHTML = y + "年" + Appendzero(mt) + "月" + Appendzero(day) + "日" + Appendzero(h) + "时" + Appendzero(m) + "分" + Appendzero(s) + "秒";
+                function Appendzero(obj) {
+                    if (obj < 10) return "0" + "" + obj;
+                    else return obj;
+                }
+                t = setTimeout(time, 1000); //设定定时器，循环运行     
+            }
+        </script>
+    </div>
+    <div class="mainbox">
+        <ul class="clearfix">
+            <li>
+                <div class="boxall" style="height: calc(12% - .15rem)">
+                    <ul class="row h100 row1">
+                        <li class="col-4">
+                            <div class="bar1"><img src="images/icon1.png">
+                                <h3><span>材料标准</span>2,847项</h3>
+                            </div>
+                        </li>
+                        <li class="col-4">
+                            <div class="bar1"><img src="images/icon4.png">
+                                <h3><span>数据资源</span>15,632个</h3>
+                            </div>
+                        </li>
+                        <li class="col-4">
+                            <div class="bar1"><img src="images/icon5.png">
+                                <h3><span>企业数量</span>1,247家</h3>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="boxall" style="height: calc(40% - .15rem)">
+                    <div class="alltitle">数据标准与资源</div>
+                    <div class="table-container">
+                        <div class="table-tabs">
+                            <div class="table-tab active" onclick="switchTable('standard')">数据标准</div>
+                            <div class="table-tab" onclick="switchTable('resource')">数据资源</div>
+                        </div>
+                        <div class="table-content">
+                            <table class="data-table" id="standardTable">
+                                <thead>
+                                    <tr>
+                                        <th>标准编号</th>
+                                        <th>标准名称</th>
+                                        <th>发布状态</th>
+                                        <th>更新时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>GB/T 12345</td><td>金属材料拉伸试验方法</td><td>已发布</td><td>2024-01-15</td></tr>
+                                    <tr><td>GB/T 23456</td><td>高分子材料性能测试</td><td>已发布</td><td>2024-02-20</td></tr>
+                                    <tr><td>GB/T 34567</td><td>复合材料强度评估</td><td>制定中</td><td>2024-03-10</td></tr>
+                                    <tr><td>GB/T 45678</td><td>陶瓷材料硬度测试</td><td>已发布</td><td>2024-01-08</td></tr>
+                                    <tr><td>GB/T 56789</td><td>纳米材料表征方法</td><td>制定中</td><td>2024-04-05</td></tr>
+                                </tbody>
+                            </table>
+                            <table class="data-table" id="resourceTable" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>资源名称</th>
+                                        <th>数据类型</th>
+                                        <th>数据量</th>
+                                        <th>更新频率</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>材料性能数据库</td><td>结构化</td><td>2.3TB</td><td>每日</td></tr>
+                                    <tr><td>企业生产数据</td><td>半结构化</td><td>1.8TB</td><td>实时</td></tr>
+                                    <tr><td>科研文献库</td><td>非结构化</td><td>5.6TB</td><td>每周</td></tr>
+                                    <tr><td>市场分析报告</td><td>结构化</td><td>890GB</td><td>每月</td></tr>
+                                    <tr><td>专利信息库</td><td>半结构化</td><td>3.2TB</td><td>每日</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="boxall" style="height: calc(40% - .15rem)">
+                    <div class="alltitle">技术攻关重点</div>
+                    <div class="tech-points">
+                        <div class="tech-point">
+                            <h4>新材料研发</h4>
+                            <p>突破高性能复合材料、智能材料等前沿技术，提升材料性能指标</p>
+                        </div>
+                        <div class="tech-point">
+                            <h4>智能制造</h4>
+                            <p>推进材料生产数字化、智能化转型，提高生产效率和产品质量</p>
+                        </div>
+                        <div class="tech-point">
+                            <h4>绿色制造</h4>
+                            <p>发展环保材料技术，降低能耗和污染，实现可持续发展</p>
+                        </div>
+                        <div class="tech-point">
+                            <h4>标准体系</h4>
+                            <p>完善材料标准体系，提升行业规范化水平，促进产业升级</p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="boxall" style="height: calc(16% - .15rem)">
+                    <ul class="row h100 clearfix">
+                        <li class="col-6">
+                            <div class="sqzs h100">
+                                <p>平台总览</p>
+                                <h1>18,726</h1>
+                            </div>
+                        </li>
+                        <li class="col-6">
+                            <ul class="row h100 clearfix">
+                                <li class="col-4">
+                                    <div class="tit01">金属材料</div>
+                                    <div class="piebox" id="pe01"></div>
+                                </li>
+                                <li class="col-4">
+                                    <div class="tit01">高分子材料</div>
+                                    <div class="piebox" id="pe02"></div>
+                                </li>
+                                <li class="col-4">
+                                    <div class="tit01">复合材料</div>
+                                    <div class="piebox" id="pe03"></div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="boxall" style="height: calc(40% - .15rem)">
+                    <div class="alltitle">2024年材料专业人才分布</div>
+                    <div class="boxnav h100" id="echarts1" style="width: 100%; height: 100%;"></div>
+                </div>
+                <div class="boxall" style="height: calc(36% - .15rem)">
+                    <div class="alltitle">业务模块</div>
+                    <div class="module-grid">
+                        <div class="module-item" onclick="openModule('research')">
+                            <img src="images/icon1.png">
+                            <h4>研发管理</h4>
+                        </div>
+                        <div class="module-item" onclick="openModule('production')">
+                            <img src="images/icon2.png">
+                            <h4>生产监控</h4>
+                        </div>
+                        <div class="module-item" onclick="openModule('quality')">
+                            <img src="images/icon3.png">
+                            <h4>质量检测</h4>
+                        </div>
+                        <div class="module-item" onclick="openModule('market')">
+                            <img src="images/icon4.png">
+                            <h4>市场分析</h4>
+                        </div>
+                        <div class="module-item" onclick="openModule('supply')">
+                            <img src="images/icon5.png">
+                            <h4>供应链管理</h4>
+                        </div>
+                        <div class="module-item" onclick="openModule('finance')">
+                            <img src="images/icon6.png">
+                            <h4>财务管理</h4>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="boxall" style="height: calc(12% - .15rem)">
+                    <ul class="row h100 row1">
+                        <li class="col-4">
+                            <div class="bar1 bar2"><img src="images/icon7.png">
+                                <h3><span>专利申请</span>1,847项</h3>
+                            </div>
+                        </li>
+                        <li class="col-4">
+                            <div class="bar1 bar2"><img src="images/icon8.png">
+                                <h3><span>科研机构</span>156家</h3>
+                            </div>
+                        </li>
+                        <li class="col-4">
+                            <div class="bar1 bar2"><img src="images/icon9.png">
+                                <h3><span>技术成果</span>892项</h3>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="boxall" style="height: calc(40% - .15rem)">
+                    <div class="alltitle">材料产业发展趋势</div>
+                    <div class="boxnav" id="lastecharts"></div>
+                </div>
+                <div class="boxall" style="height: calc(48% - .15rem)">
+                    <div class="alltitle">企业排行榜</div>
+                    <div class="boxnav paim">
+                        <ul class="h100">
+                            <li>
+                                <span>1</span>
+                                <div class="pmnav">
+                                    <p>中国宝武钢铁集团有限公司</p>
+                                    <div class="pmbar"><span style="width:100%"></span><i>98.5</i></div>
+                                </div>
+                            </li>
+                            <li>
+                                <span>2</span>
+                                <div class="pmnav">
+                                    <p>中国铝业集团有限公司</p>
+                                    <div class="pmbar"><span style="width:92%"></span><i>90.2</i></div>
+                                </div>
+                            </li>
+                            <li>
+                                <span>3</span>
+                                <div class="pmnav">
+                                    <p>中国建材集团有限公司</p>
+                                    <div class="pmbar"><span style="width:88%"></span><i>85.7</i></div>
+                                </div>
+                            </li>
+                            <li>
+                                <span>4</span>
+                                <div class="pmnav">
+                                    <p>中国有色矿业集团有限公司</p>
+                                    <div class="pmbar"><span style="width:85%"></span><i>82.3</i></div>
+                                </div>
+                            </li>
+                            <li>
+                                <span>5</span>
+                                <div class="pmnav">
+                                    <p>中国五矿集团有限公司</p>
+                                    <div class="pmbar"><span style="width:80%"></span><i>78.9</i></div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var arr = [];
+            var max;
+            $(".paim li i").each(function () {
+                arr.push($(this).text());
+            })
+            max = Math.max.apply(null, arr);
+
+            $(".paim .pmbar span").each(function () {
+                var i = $(this).parents("li").index()
+                w = arr[i] / max * 100;
+                sw = w.toFixed(0) + '%'
+
+                $(this).css({ width: sw })
+            })
+            
+            // 确保加载界面隐藏
+            setTimeout(function() {
+                $(".loading").fadeOut();
+            }, 1000);
+        })
+
+        function switchTable(type) {
+            $('.table-tab').removeClass('active');
+            $('.data-table').hide();
+            
+            if (type === 'standard') {
+                $('.table-tab:first').addClass('active');
+                $('#standardTable').show();
+            } else {
+                $('.table-tab:last').addClass('active');
+                $('#resourceTable').show();
+            }
+        }
+
+        function openModule(module) {
+            alert('正在跳转到' + getModuleName(module) + '模块...');
+            // 这里可以添加实际的跳转逻辑
+        }
+
+        function getModuleName(module) {
+            const names = {
+                'research': '研发管理',
+                'production': '生产监控',
+                'quality': '质量检测',
+                'market': '市场分析',
+                'supply': '供应链管理',
+                'finance': '财务管理'
+            };
+            return names[module] || module;
+        }
+    </script>
+
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+    <script language="JavaScript" src="js/js.js"></script>
+
+</body>
+</html> 

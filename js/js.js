@@ -20,14 +20,15 @@ $(function () {
     
     // 延迟初始化图表，确保DOM完全加载
     setTimeout(function() {
-        echarts_1()
-        echarts_2()
-        echarts_3()
-        pe04()
+        try { echarts_1 && echarts_1(); } catch (e) { console.warn('echarts_1 init skipped:', e); }
+        try { echarts_2 && echarts_2(); } catch (e) { console.warn('echarts_2 init skipped:', e); }
+        try { echarts_3 && echarts_3(); } catch (e) { console.warn('echarts_3 init skipped:', e); }
+        try { pe04 && pe04(); } catch (e) { console.warn('pe04 init skipped:', e); }
 
-        pe01()
-        pe02()
-        pe03()
+        try { pe01 && pe01(); } catch (e) { console.warn('pe01 init skipped:', e); }
+        try { pe02 && pe02(); } catch (e) { console.warn('pe02 init skipped:', e); }
+        try { pe03 && pe03(); } catch (e) { console.warn('pe03 init skipped:', e); }
+        try { materialPie && materialPie(); } catch (e) { console.warn('materialPie init skipped:', e); }
     }, 100);
     function echarts_4() {
       var myChart = echarts.init(document.getElementById('echarts4'));
@@ -201,7 +202,7 @@ grid: {
 },
 xAxis: {
   type: 'category',
-  data: ['北京', '上海', '深圳', '广州', '杭州', '南京', '武汉', '成都', '西安', '天津', '青岛'],
+  data: ['苏州', '上海', '深圳', '广州', '北京', '重庆'],
   axisLine: {show:false},
  
   axisLabel: {
@@ -214,8 +215,8 @@ xAxis: {
 
 yAxis: {
   type: 'value',
-  max: 3000,
-  splitNumber:6,
+  max: 700,
+  splitNumber:7,
   axisLine: { show: false },
 axisTick: {show: false},
   splitLine: {
@@ -265,7 +266,7 @@ series: [ {
           shadowOffsetY: 8
       }
     },
-  data: [2847, 2156, 1987, 1654, 1432, 1234, 1156, 987, 876, 654, 543]
+  data: [625, 609, 410, 310, 285, 252]
 
 }]
 };
@@ -851,4 +852,83 @@ axisLabel:  {
           myChart.resize();
       });
   }
+  
+  // 材料类型分布饼状图
+  function materialPie() {
+    var chartDom = document.getElementById('materialPie');
+    if (!chartDom) {
+      console.error('materialPie element not found');
+      return;
+    }
+    console.log('materialPie element found, initializing chart...');
+    var myChart = echarts.init(chartDom);
+    
+    option = {
+      tooltip: {
+        trigger: 'item',
+        formatter: "{b} : {c} ({d}%)"
+      },
+      legend: {
+        right: 10,
+        top: 30,
+        height: 140,
+        itemWidth: 10,
+        itemHeight: 10,
+        itemGap: 10,
+        textStyle: {
+          color: 'rgba(255,255,255,.6)',
+          fontSize: 12
+        },
+        orient: 'vertical',
+        data: ['先进轻合金材料', '先进储能材料', '镁合金', '铝合金', '铜合金', '半导体', '热电材料', '高熵合金']
+      },
+      calculable: true,
+      series: [{
+        name: '材料类型',
+        color: ['#78fbb2', '#49bcf7', '#fef000', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'],
+        type: 'pie',
+        radius: [30, 70],
+        center: ['35%', '50%'],
+        roseType: 'radius',
+        label: {
+          normal: {
+            show: true,
+            formatter: '{b}\n{d}%',
+            textStyle: {
+              color: '#fff',
+              fontSize: 12
+            }
+          },
+          emphasis: {
+            show: true
+          }
+        },
+        labelLine: {
+          normal: {
+            show: false
+          },
+          emphasis: {
+            show: true
+          }
+        },
+        data: [
+          {value: 8000, name: '先进轻合金材料'},
+          {value: 6181, name: '先进储能材料'},
+          {value: 4386, name: '镁合金'},
+          {value: 4055, name: '铝合金'},
+          {value: 2467, name: '铜合金'},
+          {value: 2244, name: '半导体'},
+          {value: 1898, name: '热电材料'},
+          {value: 1484, name: '高熵合金'}
+        ]
+      }]
+    };
+    
+    myChart.setOption(option);
+    console.log('materialPie chart initialized');
+    window.addEventListener("resize",function(){
+        myChart.resize();
+    });
+  }
+  
 })

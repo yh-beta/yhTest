@@ -3,10 +3,81 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>材料大数据平台</title>
-	<meta http-equiv="refresh" content="50;url='index.html'">
+	<title>材料智能设计平台</title>
+
 	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/echarts.min.js"></script>
+	<script type="text/javascript" src="js/echarts-map-china.js"></script>
+    <!-- ECharts WordCloud plugin: prefer local from sibling project, then local js/, then CDN (v1 for ECharts v4) -->
+    <script type="text/javascript" src="../091 ECharts扩展示例自定义视图/js/echarts-wordcloud.min.js"></script>
+    <script type="text/javascript" src="js/echarts-wordcloud.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/echarts-wordcloud@1/dist/echarts-wordcloud.min.js'"></script>
+	<script language="JavaScript" src="js/js.js"></script>
+
 	<link rel="stylesheet" href="css/comon0.css">
+	<style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #051b4a; color: #fff; overflow: hidden; }
+        #chart-container1 { 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+            overflow: hidden; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        #myChart1 { 
+            width: 100% !important; 
+            height: 100% !important; 
+            max-width: 100%;
+            max-height: 100%;
+            box-sizing: border-box;
+        }
+        /* 优化地图显示 */
+        #chart-container1 canvas {
+            max-width: 100% !important;
+            max-height: 100% !important;
+        }
+        /* 确保地图容器能够正确响应父容器大小变化 */
+        .boxall[style*="height: calc(70% - .15rem)"] {
+            overflow: hidden;
+        }
+        .boxall[style*="height: calc(70% - .15rem)"] #chart-container1 {
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+        }
+        /* 优化地图显示区域 */
+        .boxall[style*="height: calc(70% - .15rem)"] {
+            padding: 0.1rem;
+        }
+        .boxall[style*="height: calc(70% - .15rem)"] .alltitle {
+            margin-bottom: 0.05rem;
+        }
+        /* 强制地图容器样式 */
+        #myChart1 canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .chart-loading1 { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            color: #fff; 
+            font-size: 18px; 
+            z-index: 10; 
+        }
+        .loading1 { 
+            position: absolute; 
+            top: 50%; 
+            left: 1000px; 
+            transform: translate(-50%, -50%); 
+            color: #fff; 
+            font-size: 18px; 
+        }
+    </style>
 	<style>
 		/* 全局字体渲染优化 */
 		* {
@@ -423,9 +494,43 @@
 			display: flex;
 			margin-bottom: 10px;
 		}
+		.table-tab {
+			padding: 8px 16px;
+			background: rgba(73, 188, 247, 0.3);
+			color: #fff;
+			cursor: pointer;
+			margin-right: 8px;
+			border-radius: 6px;
+			transition: all 0.3s ease;
+			font-size: 16px;
+			line-height: 1.3;
+			font-weight: 600;
+			position: relative;
+			overflow: hidden;
+		}
+		.table-tab:hover {
+			background: rgba(73, 188, 247, 0.5);
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(73, 188, 247, 0.3);
+		}
 		.table-tab.active {
 			background: #49bcf7;
 			font-size: 16px;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(73, 188, 247, 0.4);
+		}
+		.table-tab::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+			transition: left 0.5s;
+		}
+		.table-tab:hover::before {
+			left: 100%;
 		}
 		.table-content {
 			height: calc(100% - 60px);
@@ -437,9 +542,9 @@
 		.module-grid {
 			display: grid;
 			grid-template-columns: repeat(3, 1fr);
-			gap: 10px;
+			gap: 8px;
 			height: 100%;
-			padding: 8px;
+			padding: 6px;
 		}
 		.module-item {
 			background: linear-gradient(135deg, rgba(73, 188, 247, 0.2), rgba(20, 182, 255, 0.1));
@@ -465,9 +570,9 @@
 		.tech-points {
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
-			gap: 15px;
+			gap: 12px;
 			height: 100%;
-			padding: 8px;
+			padding: 6px;
 		}
 		.tech-point {
 			background: linear-gradient(135deg, rgba(255, 239, 0, 0.1), rgba(255, 239, 0, 0.05));
@@ -502,26 +607,130 @@
     font-size: revert !important;
 }
 .mainbox { position: relative; }
-.data-standard-scroll {
-    height: 260px;
+  .data-standard-scroll {
+      height: 320px;
+      overflow: hidden;
+      position: relative;
+      opacity: 1;
+      transition: opacity 0.3s ease-in-out;
+  }
+  .data-standard-scroll.fade-out {
+      opacity: 0;
+  }
+  .data-standard-scroll.fade-in {
+      opacity: 1;
+  }
+  /* 确保切换时的平滑过渡 */
+  .data-standard-scroll {
+      will-change: opacity;
+      backface-visibility: hidden;
+  }
+  .data-standard-scroll table {
+      margin: 0;
+      width: 100%;
+      border-collapse: collapse;
+  }
+  .data-standard-scroll .table-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #1a1a1a;
+  }
+  .data-standard-scroll .table-header th {
+      padding: 6px 8px !important;
+      font-size: 13px !important;
+      border-bottom: 1px solid #333;
+      background: #1a1a1a;
+  }
+  .data-standard-scroll .table-body {
+      height: calc(100% - 40px);
+      overflow: hidden;
+      position: relative;
+  }
+  .data-standard-scroll .table-body .data-table {
+      margin: 0;
+      width: 100%;
+  }
+  @keyframes tableScroll {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+  }
+  .data-standard-scroll .table-body .scroll-content {
+      display: inline-block;
+      animation: tableScroll 8s linear infinite;
+      width: 100%;
+  }
+  .data-standard-scroll .table-body .scroll-content.paused {
+      animation-play-state: paused;
+  }
+  .data-standard-section {
+      padding: 0.1rem;
+  }
+  .data-standard-section .alltitle {
+      font-size: 18px !important;
+      line-height: 0.4rem !important;
+      margin-bottom: 0.05rem !important;
+      padding-top: 0.05rem !important;
+  }
+  .data-standard-section .table-tabs {
+      margin-bottom: 5px;
+  }
+  .data-standard-section .table-tab {
+      padding: 4px 8px !important;
+      font-size: 12px !important;
+      margin-right: 4px !important;
+  }
+  .data-standard-section .data-table {
+      font-size: 12px !important;
+  }
+  .data-standard-section .data-table th,
+  .data-standard-section .data-table td {
+      padding: 3px 4px !important;
+      font-size: 11px !important;
+  }
+
+  /* 调整数据标准与资源模块在新位置的样式 */
+  .boxall .data-standard-scroll {
+      height: 260px;
+  }
+  .boxall .table-tabs {
+      margin-bottom: 10px;
+  }
+  .boxall .table-tab {
+      padding: 6px 12px !important;
+      font-size: 14px !important;
+      margin-right: 6px !important;
+  }
+  .boxall .data-table {
+      font-size: 14px !important;
+  }
+  .boxall .data-table th,
+  .boxall .data-table td {
+      padding: 6px 8px !important;
+      font-size: 13px !important;
+  }
+/* 美化表头样式 */
+.data-standard-scroll .table-header th {
+    background: linear-gradient(90deg, #49bcf7 0%, #1a1a1a 100%);
+    color: #fff;
+    font-size: 16px !important;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #49bcf7;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(73,188,247,0.08);
+}
+.data-standard-scroll .table-body .data-table td {
+    text-align: center;
+    width: 25%;
+}
+.data-standard-scroll .table-body {
+    height: 200px; /* 保证只显示5行 */
     overflow: hidden;
     position: relative;
 }
-.data-standard-scroll table {
-    margin: 0;
-}
-@keyframes tableScroll {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-50%); }
-}
-.data-standard-scroll .scroll-content {
-    display: inline-block;
-    animation: tableScroll 10s linear infinite;
-}
-.data-standard-scroll .scroll-content.paused {
-    animation-play-state: paused;
-}
 	</style>
+	
 </head>
 
 <body>
@@ -529,7 +738,7 @@
 		<div class="loadbox"> <img src="images/loading.gif"> 页面加载中... </div>
 	</div>
 	<div class="head">
-		<h1>材料大数据平台</h1>
+		<h1>材料智能设计平台</h1>
 		<div class="time" id="showTime">2024年12月05日16时16分54秒</div>
 		<script>
 			var t = null;
@@ -556,7 +765,7 @@
 	<div class="mainbox">
 		<ul class="clearfix">
 			<li>
-				<div class="boxall" style="height: calc(12% - .15rem)">
+				<!-- <div class="boxall" style="height: calc(12% - .15rem)">
 					<ul class="row h100 row1">
 						<li class="col-4">
 							<div class="bar1"><img src="images/icon1.png">
@@ -574,309 +783,158 @@
 							</div>
 						</li>
 					</ul>
-				</div>
-				<div class="boxall data-standard-section" style="height: 370px;">
+				</div> -->
+				<div class="boxall" style="min-height: 360px;">
 					<div class="alltitle">数据标准与资源</div>
 					<div class="table-tabs">
 						<div class="table-tab active" onclick="switchStandardTab('standard')">数据标准</div>
 						<div class="table-tab" onclick="switchStandardTab('resource')">数据资源</div>
 					</div>
 					<div class="data-standard-scroll" id="standardScroll" style="display: block;">
-						<div class="scroll-content" id="standardScrollContent">
-							<table class="data-table">
-								<thead>
-									<tr>
-										<th>标准编号</th>
-										<th>标准名称</th>
-										<th>发布状态</th>
-										<th>更新时间</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr><td>GB/T 12345</td><td>金属材料拉伸试验方法</td><td>已发布</td><td>2024-01-15</td></tr>
-									<tr><td>GB/T 23456</td><td>高分子材料性能测试</td><td>已发布</td><td>2024-02-20</td></tr>
-									<tr><td>GB/T 34567</td><td>复合材料强度评估</td><td>制定中</td><td>2024-03-10</td></tr>
-									<tr><td>GB/T 45678</td><td>陶瓷材料硬度测试</td><td>已发布</td><td>2024-01-08</td></tr>
-									<tr><td>GB/T 56789</td><td>纳米材料表征方法</td><td>制定中</td><td>2024-04-05</td></tr>
-									<tr><td>GB/T 67890</td><td>生物材料安全性评价</td><td>已发布</td><td>2024-05-12</td></tr>
-									<tr><td>GB/T 78901</td><td>功能材料测试规范</td><td>制定中</td><td>2024-06-08</td></tr>
-								</tbody>
-							</table>
-							<table class="data-table">
-								<thead>
-									<tr>
-										<th>标准编号</th>
-										<th>标准名称</th>
-										<th>发布状态</th>
-										<th>更新时间</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr><td>GB/T 12345</td><td>金属材料拉伸试验方法</td><td>已发布</td><td>2024-01-15</td></tr>
-									<tr><td>GB/T 23456</td><td>高分子材料性能测试</td><td>已发布</td><td>2024-02-20</td></tr>
-									<tr><td>GB/T 34567</td><td>复合材料强度评估</td><td>制定中</td><td>2024-03-10</td></tr>
-									<tr><td>GB/T 45678</td><td>陶瓷材料硬度测试</td><td>已发布</td><td>2024-01-08</td></tr>
-									<tr><td>GB/T 56789</td><td>纳米材料表征方法</td><td>制定中</td><td>2024-04-05</td></tr>
-									<tr><td>GB/T 67890</td><td>生物材料安全性评价</td><td>已发布</td><td>2024-05-12</td></tr>
-									<tr><td>GB/T 78901</td><td>功能材料测试规范</td><td>制定中</td><td>2024-06-08</td></tr>
-								</tbody>
-							</table>
+						<table class="data-table">
+							<thead class="table-header">
+								<tr>
+									<th>标准名称</th>
+									<th>发布机构</th>
+								</tr>
+							</thead>
+						</table>
+						<div class="table-body">
+							<div class="scroll-content" id="standardScrollContent">
+								<table class="data-table">
+									<tbody>
+										<tr><td>镁合金铸件X射线实时成像检测方法</td><td>国家质量监督检验检疫总局、国家标准化管理委员会</td></tr>
+										<tr><td>3C产品用镁合金薄板</td><td>国家质量监督检验检疫总局、国家标准化管理委员会</td></tr>
+										<tr><td>变形镁及镁合金圆铸锭</td><td>国家发展和改革委员会</td></tr>
+										<tr><td>便携式工具用镁合金压铸件</td><td>国家发展和改革委员会</td></tr>
+										<tr><td>镁及镁合金废料</td><td>国家质量监督检验检疫总局、国家标准化管理委员会</td></tr>
+									</tbody>
+								</table>
+								<table class="data-table">
+									<tbody>
+										<tr><td>镁合金铸件X射线实时成像检测方法</td><td>国家质量监督检验检疫总局、国家标准化管理委员会</td></tr>
+										<tr><td>3C产品用镁合金薄板</td><td>国家质量监督检验检疫总局、国家标准化管理委员会</td></tr>
+										<tr><td>变形镁及镁合金圆铸锭</td><td>国家发展和改革委员会</td></tr>
+										<tr><td>便携式工具用镁合金压铸件</td><td>国家发展和改革委员会</td></tr>
+										<tr><td>镁及镁合金废料</td><td>国家质量监督检验检疫总局、国家标准化管理委员会</td></tr>
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
 					<div class="data-standard-scroll" id="resourceScroll" style="display: none;">
-						<div class="scroll-content" id="resourceScrollContent">
-							<table class="data-table">
-								<thead>
-									<tr>
-										<th>资源名称</th>
-										<th>数据类型</th>
-										<th>数据量</th>
-										<th>更新频率</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr><td>材料性能数据库</td><td>结构化</td><td>2.3TB</td><td>每日</td></tr>
-									<tr><td>企业生产数据</td><td>半结构化</td><td>1.8TB</td><td>实时</td></tr>
-									<tr><td>科研文献库</td><td>非结构化</td><td>5.6TB</td><td>每周</td></tr>
-									<tr><td>市场分析报告</td><td>结构化</td><td>890GB</td><td>每月</td></tr>
-									<tr><td>专利信息库</td><td>半结构化</td><td>3.2TB</td><td>每日</td></tr>
-									<tr><td>质量标准库</td><td>结构化</td><td>1.5TB</td><td>每周</td></tr>
-									<tr><td>检测报告库</td><td>半结构化</td><td>2.1TB</td><td>每日</td></tr>
-								</tbody>
-							</table>
-							<table class="data-table">
-								<thead>
-									<tr>
-										<th>资源名称</th>
-										<th>数据类型</th>
-										<th>数据量</th>
-										<th>更新频率</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr><td>材料性能数据库</td><td>结构化</td><td>2.3TB</td><td>每日</td></tr>
-									<tr><td>企业生产数据</td><td>半结构化</td><td>1.8TB</td><td>实时</td></tr>
-									<tr><td>科研文献库</td><td>非结构化</td><td>5.6TB</td><td>每周</td></tr>
-									<tr><td>市场分析报告</td><td>结构化</td><td>890GB</td><td>每月</td></tr>
-									<tr><td>专利信息库</td><td>半结构化</td><td>3.2TB</td><td>每日</td></tr>
-									<tr><td>质量标准库</td><td>结构化</td><td>1.5TB</td><td>每周</td></tr>
-									<tr><td>检测报告库</td><td>半结构化</td><td>2.1TB</td><td>每日</td></tr>
-								</tbody>
-							</table>
+						<table class="data-table">
+							<thead class="table-header">
+								<tr>
+									<th style="width: 25%;">牌号</th>
+									<th style="width: 25%;">抗拉强度/Mpa</th>
+									<th style="width: 25%;">屈服强度/M</th>
+									<th style="width: 25%;">伸长率/%pa</th>
+								</tr>
+							</thead>
+						</table>
+						<div class="table-body">
+							<div class="scroll-content" id="resourceScrollContent">
+								<table class="data-table">
+									<tbody>
+										<tr><td>ZK61M</td><td>330</td><td>240</td><td>19</td></tr>
+										<tr><td>VW83M</td><td>310</td><td>240</td><td>13</td></tr>
+										<tr><td>ZK61M(MB15)</td><td>307</td><td>241</td><td>17</td></tr>
+										<tr><td>AZ80</td><td>340</td><td>260</td><td>7</td></tr>
+										<tr><td>AZ61</td><td>280</td><td>210</td><td>10</td></tr>
+									</tbody>
+								</table>
+								<table class="data-table">
+									<tbody>
+										<tr><td>ZK61M</td><td>330</td><td>240</td><td>19</td></tr>
+										<tr><td>VW83M</td><td>310</td><td>240</td><td>13</td></tr>
+										<tr><td>ZK61M(MB15)</td><td>307</td><td>241</td><td>17</td></tr>
+										<tr><td>AZ80</td><td>340</td><td>260</td><td>7</td></tr>
+										<tr><td>AZ61</td><td>280</td><td>210</td><td>10</td></tr>
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
-					<script>
-					let standardTimer, resourceTimer;
-					function switchStandardTab(type) {
-						document.querySelectorAll('.table-tab').forEach(tab => tab.classList.remove('active'));
-						if(type === 'standard') {
-							document.querySelector('.table-tab:first-child').classList.add('active');
-							document.getElementById('standardScroll').style.display = 'block';
-							document.getElementById('resourceScroll').style.display = 'none';
-						} else {
-							document.querySelector('.table-tab:last-child').classList.add('active');
-							document.getElementById('standardScroll').style.display = 'none';
-							document.getElementById('resourceScroll').style.display = 'block';
-						}
-					}
-					// 独立轮播动画控制
-					function startStandardScroll() {
-						const el = document.getElementById('standardScrollContent');
-						el.classList.remove('paused');
-					}
-					function stopStandardScroll() {
-						const el = document.getElementById('standardScrollContent');
-						el.classList.add('paused');
-					}
-					function startResourceScroll() {
-						const el = document.getElementById('resourceScrollContent');
-						el.classList.remove('paused');
-					}
-					function stopResourceScroll() {
-						const el = document.getElementById('resourceScrollContent');
-						el.classList.add('paused');
-					}
-					// 鼠标悬停暂停动画
-					document.addEventListener('DOMContentLoaded', function() {
-						document.getElementById('standardScroll').addEventListener('mouseenter', stopStandardScroll);
-						document.getElementById('standardScroll').addEventListener('mouseleave', startStandardScroll);
-						document.getElementById('resourceScroll').addEventListener('mouseenter', stopResourceScroll);
-						document.getElementById('resourceScroll').addEventListener('mouseleave', startResourceScroll);
-						startStandardScroll();
-						stopResourceScroll();
-					});
-					</script>
 				</div>
-				<div class="boxall tech-key-bottom">
-					<div class="alltitle">技术攻关重点</div>
-					<div class="tech-points">
-						<div class="tech-point">
-							<h4>新材料研发</h4>
-							<p>突破高性能复合材料、智能材料等前沿技术，提升材料性能指标</p>
-						</div>
-						<div class="tech-point">
-							<h4>智能制造</h4>
-							<p>推进材料生产数字化、智能化转型，提高生产效率和产品质量</p>
-						</div>
-						<div class="tech-point">
-							<h4>绿色制造</h4>
-							<p>发展环保材料技术，降低能耗和污染，实现可持续发展</p>
-						</div>
-						<div class="tech-point">
-							<h4>标准体系</h4>
-							<p>完善材料标准体系，提升行业规范化水平，促进产业升级</p>
-						</div>
-					</div>
+				<div class="boxall" style="height: calc(54% - .15rem)">
+                    <div class="alltitle">材料类型分布</div>
+                    <div class="boxnav" id="materialPie" style="width: 100%; height: 100%;"></div>
 				</div>
 			</li>
 			<li>
-				<div class="boxall" style="height: calc(16% - .15rem)">
-					<ul class="row h100 clearfix">
-						<li class="col-6">
-							<div class="sqzs h100">
-								<p>平台总览</p>
-								<h1>18,726</h1>
-							</div>
-						</li>
-						<li class="col-6">
-							<ul class="row h100 clearfix">
-								<li class="col-4">
-									<div class="tit01">金属材料</div>
-									<div class="piebox" id="pe01"></div>
-								</li>
-								<li class="col-4">
-									<div class="tit01">高分子材料</div>
-									<div class="piebox" id="pe02"></div>
-								</li>
-								<li class="col-4">
-									<div class="tit01">复合材料</div>
-									<div class="piebox" id="pe03"></div>
-								</li>
-							</ul>
-						</li>
-					</ul>
+				<div class="boxall" style="height: calc(100% - .15rem); position: relative;">
+					<div class="alltitle">材料产业分布地图</div>
+					<div id="chart-container1" style="width: 100%; height: calc(100% - 60px); position: relative; overflow: hidden;">
+						<div id="myChart1" style="width: 100% !important; height: 100% !important;"></div>
+					</div>
 				</div>
-				<div class="boxall" style="height: calc(40% - .15rem)">
-					<div class="alltitle">2024年材料专业人才分布</div>
-					<div class="boxnav h100" id="echarts1" style="width: 100%; height: 100%;"></div>
-				</div>
+				
+			</li>
+			<li>
 				<div class="boxall" style="border-radius: 16px; box-shadow: 0 2px 12px rgba(73,188,247,0.08);">
 					<div class="alltitle">业务模块</div>
 					<div class="module-grid">
-						<div class="module-item" onclick="openModule('research')">
+						<div class="module-item" onclick="openModule('multiscale')">
 							<img src="images/icon1.png">
-							<h4>研发管理</h4>
+							<h4>多尺度智能设计</h4>
 						</div>
-						<div class="module-item" onclick="openModule('production')">
+						<div class="module-item" onclick="openModule('multimodal')">
 							<img src="images/icon2.png">
-							<h4>生产监控</h4>
+							<h4>材料多模态大模型</h4>
 						</div>
-						<div class="module-item" onclick="openModule('quality')">
+						<div class="module-item" onclick="openModule('advanced')">
 							<img src="images/icon3.png">
-							<h4>质量检测</h4>
+							<h4>先进材料智能设计</h4>
 						</div>
-						<div class="module-item" onclick="openModule('market')">
+						<div class="module-item" onclick="openModule('prediction')">
 							<img src="images/icon4.png">
-							<h4>市场分析</h4>
+							<h4>材料性能预测</h4>
 						</div>
-						<div class="module-item" onclick="openModule('supply')">
+						<div class="module-item" onclick="openModule('database')">
 							<img src="images/icon5.png">
-							<h4>供应链管理</h4>
+							<h4>材料数据库与图谱</h4>
 						</div>
-						<div class="module-item" onclick="openModule('finance')">
+						<div class="module-item" onclick="openModule('manufacturing')">
 							<img src="images/icon6.png">
-							<h4>财务管理</h4>
+							<h4>材料智制备调控</h4>
 						</div>
 					</div>
 				</div>
-			</li>
-			<li>
-				<div class="boxall" style="height: calc(12% - .15rem)">
-					<ul class="row h100 row1">
-						<li class="col-4">
-							<div class="bar1 bar2"><img src="images/icon7.png">
-								<h3><span>专利申请</span>1,847项</h3>
-							</div>
-						</li>
-						<li class="col-4">
-							<div class="bar1 bar2"><img src="images/icon8.png">
-								<h3><span>科研机构</span>156家</h3>
-							</div>
-						</li>
-						<li class="col-4">
-							<div class="bar1 bar2"><img src="images/icon9.png">
-								<h3><span>技术成果</span>892项</h3>
-							</div>
-						</li>
-					</ul>
+				<div class="boxall" style="height: calc(51% - .15rem)">
+					<div class="alltitle">2024年材料专业人才分布</div>
+					<div class="boxnav h100" id="echarts1" style="width: 100%; height: 100%;"></div>
 				</div>
-				<div class="boxall" style="height: calc(40% - .15rem)">
-					<div class="alltitle">材料产业发展趋势</div>
-					<div class="boxnav" id="lastecharts"></div>
-				</div>
-				<div class="boxall" style="height: calc(48% - .15rem)">
-					<div class="alltitle">企业排行榜</div>
-					<div class="boxnav paim">
-						<ul class="h100">
-							<li>
-								<span>1</span>
-								<div class="pmnav">
-									<p>中国宝武钢铁集团有限公司</p>
-									<div class="pmbar"><span style="width:100%"></span><i>98.5</i></div>
-								</div>
-							</li>
-							<li>
-								<span>2</span>
-								<div class="pmnav">
-									<p>中国铝业集团有限公司</p>
-									<div class="pmbar"><span style="width:92%"></span><i>90.2</i></div>
-								</div>
-							</li>
-							<li>
-								<span>3</span>
-								<div class="pmnav">
-									<p>中国建材集团有限公司</p>
-									<div class="pmbar"><span style="width:88%"></span><i>85.7</i></div>
-								</div>
-							</li>
-							<li>
-								<span>4</span>
-								<div class="pmnav">
-									<p>中国有色矿业集团有限公司</p>
-									<div class="pmbar"><span style="width:85%"></span><i>82.3</i></div>
-								</div>
-							</li>
-							<li>
-								<span>5</span>
-								<div class="pmnav">
-									<p>中国五矿集团有限公司</p>
-									<div class="pmbar"><span style="width:80%"></span><i>78.9</i></div>
-								</div>
-							</li>
-						</ul>
+				<!-- <div class="boxall tech-key-bottom">
+					<div class="alltitle">技术攻关重点</div>
+					<div class="tech-points">
+						<div class="tech-point">
+							<h4>多尺度建模</h4>
+							<p>从原子到宏观尺度的材料设计方法，实现跨尺度材料性能预测</p>
+						</div>
+						<div class="tech-point">
+							<h4>AI驱动设计</h4>
+							<p>基于机器学习的材料结构-性能关系建模，加速新材料发现</p>
+						</div>
+						<div class="tech-point">
+							<h4>高通量计算</h4>
+							<p>大规模材料筛选与优化，提高材料研发效率和成功率</p>
+						</div>
+						<div class="tech-point">
+							<h4>智能制备</h4>
+							<p>自动化材料制备工艺控制，实现精准的材料性能调控</p>
+						</div>
 					</div>
-				</div>
+				</div> -->
 			</li>
 		</ul>
 	</div>
 
+
 	<script>
+		
+        // 移除无效调用，防止脚本中断
 		$(document).ready(function () {
-			var arr = [];
-			var max;
-			$(".paim li i").each(function () {
-				arr.push($(this).text());
-			})
-			max = Math.max.apply(null, arr);
-
-			$(".paim .pmbar span").each(function () {
-				var i = $(this).parents("li").index()
-				w = arr[i] / max * 100;
-				sw = w.toFixed(0) + '%'
-
-				$(this).css({ width: sw })
-			})
-			
 			// 确保加载界面隐藏
 			setTimeout(function() {
 				$(".loading").fadeOut();
@@ -903,19 +961,630 @@
 
 		function getModuleName(module) {
 			const names = {
-				'research': '研发管理',
-				'production': '生产监控',
-				'quality': '质量检测',
-				'market': '市场分析',
-				'supply': '供应链管理',
-				'finance': '财务管理'
+				'multiscale': '多尺度智能设计',
+				'multimodal': '材料多模态大模型',
+				'advanced': '先进材料智能设计',
+				'prediction': '材料性能预测',
+				'database': '材料数据库与图谱',
+				'manufacturing': '材料智制备调控'
 			};
 			return names[module] || module;
 		}
+
+		// 数据标准与资源切换功能
+		function switchStandardTab(type) {
+			// 移除所有标签的active状态
+			document.querySelectorAll('.table-tab').forEach(tab => tab.classList.remove('active'));
+			
+			// 获取两个滚动容器
+			const standardScroll = document.getElementById('standardScroll');
+			const resourceScroll = document.getElementById('resourceScroll');
+			
+			if(type === 'standard') {
+				// 切换到数据标准
+				document.querySelector('.table-tab:first-child').classList.add('active');
+				
+				// 淡出当前显示的内容
+				if (resourceScroll.style.display !== 'none') {
+					resourceScroll.classList.add('fade-out');
+					setTimeout(() => {
+						resourceScroll.style.display = 'none';
+						resourceScroll.classList.remove('fade-out');
+						
+						// 显示数据标准并淡入
+						standardScroll.style.display = 'block';
+						standardScroll.classList.add('fade-in');
+						setTimeout(() => {
+							standardScroll.classList.remove('fade-in');
+						}, 300);
+					}, 300);
+				} else {
+					standardScroll.style.display = 'block';
+				}
+				
+				// 启动数据标准的滚动动画
+				startStandardScroll();
+				stopResourceScroll();
+				
+			} else {
+				// 切换到数据资源
+				document.querySelector('.table-tab:last-child').classList.add('active');
+				
+				// 淡出当前显示的内容
+				if (standardScroll.style.display !== 'none') {
+					standardScroll.classList.add('fade-out');
+					setTimeout(() => {
+						standardScroll.style.display = 'none';
+						standardScroll.classList.remove('fade-out');
+						
+						// 显示数据资源并淡入
+						resourceScroll.style.display = 'block';
+						resourceScroll.classList.add('fade-in');
+						setTimeout(() => {
+							resourceScroll.classList.remove('fade-in');
+						}, 300);
+					}, 300);
+				} else {
+					resourceScroll.style.display = 'block';
+				}
+				
+				// 启动数据资源的滚动动画
+				startResourceScroll();
+				stopStandardScroll();
+			}
+		}
+
+
+		
+                try {
+                    wordChart.setOption(wordOpt);
+                } catch (err) {
+                    console.error('WordCloud plugin not available, falling back to pie chart:', err);
+                    const fallbackOption = {
+                        backgroundColor: 'rgba(255, 255, 255, 0.0)',
+                        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+                        series: [{
+                            name: '材料类型',
+                            type: 'pie',
+                            radius: [30, 70],
+                            center: ['50%', '50%'],
+                            roseType: 'radius',
+                            label: { color: '#fff' },
+                            data: [
+                                { value: 8000, name: '先进轻合金材料' },
+                                { value: 6181, name: '先进储能材料' },
+                                { value: 4386, name: '镁合金' },
+                                { value: 4055, name: '铝合金' },
+                                { value: 2467, name: '铜合金' },
+                                { value: 2244, name: '半导体' },
+                                { value: 1898, name: '热电材料' },
+                                { value: 1484, name: '高熵合金' }
+                            ]
+                        }]
+                    };
+                    wordChart.setOption(fallbackOption);
+                }
+                window.addEventListener('resize', function(){
+                    if (wordChart) wordChart.resize();
+                });
+				
+  
+
+		// 独立轮播动画控制
+		function startStandardScroll() {
+			const el = document.getElementById('standardScrollContent');
+			if(el) el.classList.remove('paused');
+		}
+		function stopStandardScroll() {
+			const el = document.getElementById('standardScrollContent');
+			if(el) el.classList.add('paused');
+		}
+		function startResourceScroll() {
+			const el = document.getElementById('resourceScrollContent');
+			if(el) el.classList.remove('paused');
+		}
+		function stopResourceScroll() {
+			const el = document.getElementById('resourceScrollContent');
+			if(el) el.classList.add('paused');
+		}
+
+		// 鼠标悬停暂停动画
+		document.addEventListener('DOMContentLoaded', function() {
+			const standardScroll = document.getElementById('standardScroll');
+			const resourceScroll = document.getElementById('resourceScroll');
+			
+			if(standardScroll) {
+				standardScroll.addEventListener('mouseenter', stopStandardScroll);
+				standardScroll.addEventListener('mouseleave', startStandardScroll);
+			}
+			if(resourceScroll) {
+				resourceScroll.addEventListener('mouseenter', stopResourceScroll);
+				resourceScroll.addEventListener('mouseleave', startResourceScroll);
+			}
+			
+			startStandardScroll();
+			stopResourceScroll();
+			
+			// 初始化词云
+			initWordCloud();
+		});
+		
+		// 词云初始化函数
+		function initWordCloud() {
+			const wordCloudChart = echarts.init(document.getElementById('wordCloudChart'));
+			
+			var JosnList = [
+				{
+					name: "Jayfee",
+					value: 666,
+				},
+				{
+					name: "Nancy",
+					value: 520,
+				},
+				{
+					name: "生活资源",
+					value: "999",
+				},
+				{
+					name: "供热管理",
+					value: "888",
+				},
+				{
+					name: "供气质量",
+					value: "777",
+				},
+				{
+					name: "生活用水管理",
+					value: "688",
+				},
+				{
+					name: "一次供水问题",
+					value: "588",
+				},
+				{
+					name: "交通运输",
+					value: "516",
+				},
+				{
+					name: "城市交通",
+					value: "515",
+				},
+				{
+					name: "环境保护",
+					value: "483",
+				},
+				{
+					name: "房地产管理",
+					value: "462",
+				},
+				{
+					name: "城乡建设",
+					value: "449",
+				},
+				{
+					name: "社会保障与福利",
+					value: "429",
+				},
+				{
+					name: "社会保障",
+					value: "407",
+				},
+				{
+					name: "文体与教育管理",
+					value: "406",
+				},
+				{
+					name: "公共安全",
+					value: "406",
+				},
+				{
+					name: "公交运输管理",
+					value: "386",
+				},
+				{
+					name: "出租车运营管理",
+					value: "385",
+				},
+				{
+					name: "供热管理",
+					value: "375",
+				},
+				{
+					name: "市容环卫",
+					value: "355",
+				},
+				{
+					name: "自然资源管理",
+					value: "355",
+				},
+				{
+					name: "粉尘污染",
+					value: "335",
+				},
+				{
+					name: "噪声污染",
+					value: "324",
+				},
+			];
+			
+			var option = {
+				title: {
+					text: "词云展示",
+					link: "https://www.baidu.com/s?wd=" + encodeURIComponent("ECharts"),
+					x: "left",
+					textStyle: {
+						fontSize: 23,
+						color: "rgba(255, 255, 255, 0.8)",
+					},
+				},
+				backgroundColor: "#131f56",
+				tooltip: {
+					show: true,
+				},
+				series: [
+					{
+						name: "热点分析",
+						type: "wordCloud",
+						textPadding: 0,
+						autoSize: {
+							enable: true,
+							minSize: 6,
+						},
+						textStyle: {
+							normal: {
+								color: function () {
+									return (
+										"rgb(" +
+										[
+											Math.round(Math.random() * 105) + 150,
+											Math.round(Math.random() * 105) + 150,
+											Math.round(Math.random() * 105) + 150,
+										].join(",") +
+										")"
+									);
+								},
+							},
+							emphasis: {
+								shadowBlur: 10,
+								shadowColor: "#333",
+							},
+						},
+						data: JosnList,
+					},
+				],
+			};
+			
+			wordCloudChart.setOption(option);
+			
+			// 窗口大小改变时重置词云大小
+			window.addEventListener('resize', function() {
+				wordCloudChart.resize();
+			});
+		}
 	</script>
 
-	<script type="text/javascript" src="js/echarts.min.js"></script>
-	<script language="JavaScript" src="js/js.js"></script>
+<script>
+	var myChart1 = echarts.init(document.getElementById('myChart1'));
+	myChart1.showLoading();
+	
+	var geoGpsMap = {
+	  1: [127.9688, 45.368], 2: [116.4551, 40.2539], 3: [109.1162, 34.2004],
+	  4: [113.12244, 23.009505], 5: [87.9236, 43.5883], 6: [91.11, 29.97]
+	};
+	
+	var geoCoordMap = {
+	  台湾: [121.5135, 25.0308], 黑龙江: [127.9688, 45.368], 内蒙古: [110.3467, 41.4899],
+	  吉林: [125.8154, 44.2584], 北京市: [116.4551, 40.2539], 辽宁: [123.1238, 42.1216],
+	  河北: [114.4995, 38.1006], 天津: [117.4219, 39.4189], 山西: [112.3352, 37.9413],
+	  陕西: [109.1162, 34.2004], 甘肃: [103.5901, 36.3043], 宁夏: [106.3586, 38.1775],
+	  青海: [101.4038, 36.8207], 新疆: [87.9236, 43.5883], 西藏: [91.11, 29.97],
+	  四川: [103.9526, 30.7617], 重庆: [108.384366, 30.439702], 山东: [117.1582, 36.8701],
+	  河南: [113.4668, 34.6234], 江苏: [118.8062, 31.9208], 安徽: [117.29, 32.0581],
+	  湖北: [114.3896, 30.6628], 浙江: [119.5313, 29.8773], 福建: [119.4543, 25.9222],
+	  江西: [116.0046, 28.6633], 湖南: [113.0823, 28.2568], 贵州: [106.6992, 26.7682],
+	  云南: [102.9199, 25.4663], 广东: [113.12244, 23.009505], 广西: [108.479, 23.1152],
+	  海南: [110.3893, 19.8516], 上海: [121.4648, 31.2891]
+	};
 
+	var colors = [
+	  ["#1DE9B6", "#F46E36", "#04B9FF", "#5DBD32", "#FFC809", "#FB95D5", "#BDA29A", "#6E7074", "#546570", "#C4CCD3"],
+	  ["#37A2DA", "#67E0E3", "#32C5E9", "#9FE6B8", "#FFDB5C", "#FF9F7F", "#FB7293", "#E062AE", "#E690D1", "#E7BCF3", "#9D96F5", "#8378EA", "#8378EA"],
+	  ["#DD6B66", "#759AA0", "#E69D87", "#8DC1A9", "#EA7E53", "#EEDD78", "#73A373", "#73B9BC", "#7289AB", "#91CA8C", "#F49F42"]
+	];
+	
+	var colorIndex = 0;
+	
+	function randomNum(minNum, maxNum) {
+	  switch (arguments.length) {
+		case 1: return parseInt(Math.random() * minNum + 1, 10);
+		case 2: return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
+		default: return 0;
+	  }
+	}
+	
+	$(function () {
+	  // 更新年份为2020-2024
+	  var year = ["2020", "2021", "2022", "2023", "2024"];
+	  var mapData = [[], [], [], [], []];
+	  var categoryData = [];
+	  var barData = [];
+	  
+	  // 模拟从网络获取的数据
+	  var networkData = {
+		"2020": { "北京": 280, "上海": 265, "广东": 298, "江苏": 245, "浙江": 232, "山东": 218, "四川": 198, "湖北": 187, "河南": 176, "福建": 165 },
+		"2021": { "北京": 295, "上海": 278, "广东": 312, "江苏": 258, "浙江": 245, "山东": 225, "四川": 205, "湖北": 195, "河南": 183, "福建": 172 },
+		"2022": { "北京": 308, "上海": 290, "广东": 325, "江苏": 270, "浙江": 258, "山东": 235, "四川": 215, "湖北": 205, "河南": 190, "福建": 180 },
+		"2023": { "北京": 320, "上海": 305, "广东": 338, "江苏": 285, "浙江": 270, "山东": 248, "四川": 228, "湖北": 218, "河南": 198, "福建": 188 },
+		"2024": { "北京": 335, "上海": 320, "广东": 352, "江苏": 300, "浙江": 285, "山东": 265, "四川": 240, "湖北": 230, "河南": 210, "福建": 200 }
+	  };
+	  
+	  for (var key in geoCoordMap) {
+		categoryData.push(key);
+		for (var i = 0; i < year.length; i++) {
+		  var yearKey = year[i];
+		  var value = networkData[yearKey] && networkData[yearKey][key] ? networkData[yearKey][key] : randomNum(150, 350);
+		  mapData[i].push({
+			year: yearKey,
+			name: key,
+			value: value
+		  });
+		}
+	  }
+	  
+	  for (var i = 0; i < mapData.length; i++) {
+		barData.push([]);
+		for (var j = 0; j < mapData[i].length; j++) {
+		  barData[i].push(mapData[i][j].value);
+		}
+	  }
+	  
+	  function initChart() {
+		var convertData = function (data) {
+		  var res = [];
+		  for (var i = 0; i < data.length; i++) {
+			var geoCoord = geoCoordMap[data[i].name];
+			if (geoCoord) {
+			  res.push({
+				name: data[i].name,
+				value: geoCoord.concat(data[i].value)
+			  });
+			}
+		  }
+		  return res;
+		};
+
+		var convertToLineData = function (data, gps) {
+		  var res = [];
+		  for (var i = 0; i < data.length; i++) {
+			var dataItem = data[i];
+			var fromCoord = geoCoordMap[dataItem.name];
+			var toCoord = gps;
+			if (fromCoord && toCoord) {
+			  res.push([
+				{ coord: fromCoord, value: dataItem.value },
+				{ coord: toCoord }
+			  ]);
+			}
+		  }
+		  return res;
+		};
+
+		var optionXyMap01 = {
+		  backgroundColor: "transparent",
+		  timeline: {
+			data: year,
+			axisType: "category",
+			autoPlay: true,
+			playInterval: 3000,
+			left: "5%",
+			right: "5%",
+			bottom: "2%",
+			width: "90%",
+			label: {
+			  normal: { textStyle: { color: "#ddd" } },
+			  emphasis: { textStyle: { color: "#fff" } }
+			},
+			symbolSize: 10,
+			lineStyle: { color: "#555" },
+			checkpointStyle: { borderColor: "#777", borderWidth: 2 },
+			controlStyle: {
+			  showNextBtn: true,
+			  showPrevBtn: true,
+			  normal: { color: "#666", borderColor: "#666" },
+			  emphasis: { color: "#aaa", borderColor: "#aaa" }
+			}
+		  },
+		  baseOption: {
+			animation: true,
+			animationDuration: 1000,
+			animationEasing: "cubicInOut",
+			animationDurationUpdate: 1000,
+			animationEasingUpdate: "cubicInOut",
+			grid: { right: "1%", top: "15%", bottom: "10%", width: "20%" },
+			tooltip: {
+			  trigger: "axis",
+			  axisPointer: {
+				type: "shadow",
+				shadowStyle: { color: "rgba(150,150,150,0.1)" }
+			  }
+			},
+			geo: {
+			  show: true,
+			  map: "china",
+			  roam: true,
+			  zoom: 0.9,
+			  center: [113.83531246, 34.0267395887],
+			  aspectScale: 0.75,
+			  layoutCenter: ['50%', '50%'],
+			  layoutSize: '95%',
+			  label: { emphasis: { show: false } },
+			  itemStyle: {
+				normal: {
+				  borderColor: "rgba(147, 235, 248, 1)",
+				  borderWidth: 1,
+				  areaColor: {
+					type: "radial",
+					x: 0.5, y: 0.5, r: 0.8,
+					colorStops: [
+					  { offset: 0, color: "rgba(147, 235, 248, 0)" },
+					  { offset: 1, color: "rgba(147, 235, 248, .2)" }
+					],
+					globalCoord: false
+				  },
+				  shadowColor: "rgba(128, 217, 248, 1)",
+				  shadowOffsetX: -2,
+				  shadowOffsetY: 2,
+				  shadowBlur: 10
+				},
+				emphasis: { areaColor: "#389BB7", borderWidth: 0 }
+			  }
+			}
+		  },
+		  options: []
+		};
+		
+		for (var n = 0; n < year.length; n++) {
+		  optionXyMap01.options.push({
+			backgroundColor: "#051b4a",
+			title: [
+			  {},
+			  {
+				id: "statistic",
+				text: year[n] + "年数据统计情况",
+				left: "70%",
+				top: "5%",
+				textStyle: { color: "#fff", fontSize: 28 }
+			  }
+			],
+			xAxis: {
+			  type: "value",
+			  scale: true,
+			  position: "top",
+			  min: 0,
+			  boundaryGap: false,
+			  splitLine: { show: false },
+			  axisLine: { show: false },
+			  axisTick: { show: false },
+			  axisLabel: { margin: 2, textStyle: { color: "#aaa" } }
+			},
+			yAxis: {
+			  type: "category",
+			  nameGap: 16,
+			  axisLine: { show: true, lineStyle: { color: "#ddd" } },
+			  axisTick: { show: false, lineStyle: { color: "#ddd" } },
+			  axisLabel: { interval: 0, textStyle: { color: "#ddd" } },
+			  data: categoryData
+			},
+			series: [
+			  {
+				name: "light",
+				type: "scatter",
+				coordinateSystem: "geo",
+				data: convertData(mapData[n]),
+				symbolSize: function (val) { return val[2] / 10; },
+				label: {
+				  normal: { formatter: "{b}", position: "right", show: true },
+				  emphasis: { show: true }
+				},
+				itemStyle: { normal: { color: colors[colorIndex][n] } }
+			  },
+			  {
+				type: "map",
+				map: "china",
+				geoIndex: 0,
+				aspectScale: 0.75,
+				showLegendSymbol: false,
+				label: {
+				  normal: { show: false },
+				  emphasis: { show: false, textStyle: { color: "#fff" } }
+				},
+				roam: true,
+				itemStyle: {
+				  normal: { areaColor: "#031525", borderColor: "#FFFFFF" },
+				  emphasis: { areaColor: "#2B91B7" }
+				},
+				animation: false,
+				data: mapData
+			  },
+			  {
+				type: "effectScatter",
+				coordinateSystem: "geo",
+				data: convertData(mapData[n].sort(function (a, b) { return b.value - a.value; }).slice(0, 20)),
+				symbolSize: function (val) { return val[2] / 10; },
+				showEffectOn: "render",
+				rippleEffect: { brushType: "stroke" },
+				hoverAnimation: true,
+				label: { normal: { formatter: "{b}", position: "right", show: true } },
+				itemStyle: {
+				  normal: {
+					color: colors[colorIndex][n],
+					shadowBlur: 10,
+					shadowColor: colors[colorIndex][n]
+				  }
+				},
+				zlevel: 1
+			  },
+			  {
+				type: "lines",
+				zlevel: 2,
+				effect: {
+				  show: true,
+				  period: 4,
+				  trailLength: 0.02,
+				  symbol: "arrow",
+				  symbolSize: 3
+				},
+				lineStyle: {
+				  normal: {
+					color: colors[colorIndex][n],
+					width: 0.1,
+					opacity: 0.5,
+					curveness: 0.3
+				  }
+				},
+				data: convertToLineData(mapData[n], geoGpsMap[Math.ceil(Math.random() * 6)])
+			  },
+			  {
+				zlevel: 1.5,
+				type: "bar",
+				symbol: "none",
+				itemStyle: { normal: { color: colors[colorIndex][n] } },
+				data: barData[n]
+			  }
+			]
+		  });
+		}
+		
+		myChart1.hideLoading();
+		myChart1.setOption(optionXyMap01);
+	  }
+	  
+	  initChart();
+	});
+	
+	// 确保地图正确初始化并响应容器大小
+	myChart1.resize();
+	
+	// 延迟调整地图大小，确保容器完全加载
+	setTimeout(function() {
+		myChart1.resize();
+	}, 100);
+	
+	window.addEventListener('resize', function() {
+	  myChart1.resize();
+	});
+	
+	// 监听容器大小变化
+	const chartContainer = document.getElementById('chart-container1');
+	if (chartContainer) {
+		const resizeObserver = new ResizeObserver(function() {
+			myChart1.resize();
+		});
+		resizeObserver.observe(chartContainer);
+	}
+</script>
+
+	
 </body>
 </html>
