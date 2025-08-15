@@ -117,7 +117,8 @@
 		/* 优化模块间距 */
 		.boxall {
 			margin-bottom: 0.08rem !important;
-			padding: 0 0.15rem 0.15rem 0.15rem !important;
+			border-radius: 16px;
+			/*padding: 0 0.15rem 0.15rem 0.15rem !important;*/
 		}
 		
 		/* 优化标题 */
@@ -492,7 +493,7 @@
 		}
 		.table-tabs {
 			display: flex;
-			margin-bottom: 10px;
+			/*margin-bottom: 10px;*/
 		}
 		.table-tab {
 			padding: 8px 16px;
@@ -691,14 +692,14 @@
 
   /* 调整数据标准与资源模块在新位置的样式 */
   .boxall .data-standard-scroll {
-      height: 260px;
+      height: 300px;
   }
   .boxall .table-tabs {
-      margin-bottom: 10px;
+      /*margin-bottom: 10px;*/
   }
   .boxall .table-tab {
       padding: 6px 12px !important;
-      font-size: 14px !important;
+      font-size: 16px !important;
       margin-right: 6px !important;
   }
   .boxall .data-table {
@@ -723,9 +724,10 @@
 .data-standard-scroll .table-body .data-table td {
     text-align: center;
     width: 25%;
+	font-size: 16px !important
 }
 .data-standard-scroll .table-body {
-    height: 200px; /* 保证只显示5行 */
+    height: 100%; /* 保证只显示5行 */
     overflow: hidden;
     position: relative;
 }
@@ -784,7 +786,7 @@
 						</li>
 					</ul>
 				</div> -->
-				<div class="boxall" style="min-height: 360px;">
+				<div class="boxall" style="min-height:calc(54% - .15rem)">
 					<div class="alltitle">数据标准与资源</div>
 					<div class="table-tabs">
 						<div class="table-tab active" onclick="switchStandardTab('standard')">数据标准</div>
@@ -857,7 +859,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="boxall" style="height: calc(54% - .15rem)">
+				<div class="boxall" style="height: calc(48% - .15rem)">
                     <div class="alltitle">材料类型分布</div>
                     <div class="boxnav" id="materialPie" style="width: 100%; height: 100%;"></div>
 				</div>
@@ -901,31 +903,10 @@
 						</div>
 					</div>
 				</div>
-				<div class="boxall" style="height: calc(51% - .15rem)">
-					<div class="alltitle">2024年材料专业人才分布</div>
-					<div class="boxnav h100" id="echarts1" style="width: 100%; height: 100%;"></div>
+				<div class="boxall" style="height: calc(54% - .15rem)">
+					<div class="alltitle">模块5</div>
+<!--					<div class="boxnav h100" id="echarts1" style="width: 100%; height: 350px !important;"></div>-->
 				</div>
-				<!-- <div class="boxall tech-key-bottom">
-					<div class="alltitle">技术攻关重点</div>
-					<div class="tech-points">
-						<div class="tech-point">
-							<h4>多尺度建模</h4>
-							<p>从原子到宏观尺度的材料设计方法，实现跨尺度材料性能预测</p>
-						</div>
-						<div class="tech-point">
-							<h4>AI驱动设计</h4>
-							<p>基于机器学习的材料结构-性能关系建模，加速新材料发现</p>
-						</div>
-						<div class="tech-point">
-							<h4>高通量计算</h4>
-							<p>大规模材料筛选与优化，提高材料研发效率和成功率</p>
-						</div>
-						<div class="tech-point">
-							<h4>智能制备</h4>
-							<p>自动化材料制备工艺控制，实现精准的材料性能调控</p>
-						</div>
-					</div>
-				</div> -->
 			</li>
 		</ul>
 	</div>
@@ -1451,8 +1432,8 @@
 			  {},
 			  {
 				id: "statistic",
-				text: year[n] + "年数据统计情况",
-				left: "70%",
+				text: year[n] + "年度数据",
+				left: "60%",
 				top: "5%",
 				textStyle: { color: "#fff", fontSize: 28 }
 			  }
